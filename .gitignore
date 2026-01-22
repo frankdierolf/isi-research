@@ -1,9 +1,9 @@
 # Rust
 target/
 
-# Node.js / Website
-website/node_modules/
-website/dist/
+# Node.js
+**/node_modules/
+**/dist/
 
 # Claude Code (lokale Einstellungen)
 .claude/

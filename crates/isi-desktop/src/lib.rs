@@ -171,11 +171,14 @@ pub fn run() {
             match notification.permission_state() {
                 Ok(PermissionState::Granted) => {
                     // Permission already granted, show welcome notification
-                    let _ = notification
+                    let result = notification
                         .builder()
                         .title("ISI Voice Image")
                         .body(format!("Ready! Press {} to transform images.", shortcut))
                         .show();
+                    if let Err(e) = result {
+                        eprintln!("[ISI] Failed to show welcome notification: {}", e);
+                    }
                 }
                 Ok(PermissionState::Denied) => {
                     eprintln!("[ISI] Notification permission denied by user");
@@ -184,11 +187,14 @@ pub fn run() {
                     // Request permission - this will prompt the user on macOS
                     match notification.request_permission() {
                         Ok(PermissionState::Granted) => {
-                            let _ = notification
+                            let result = notification
                                 .builder()
                                 .title("ISI Voice Image")
                                 .body(format!("Ready! Press {} to transform images.", shortcut))
                                 .show();
+                            if let Err(e) = result {
+                                eprintln!("[ISI] Failed to show welcome notification: {}", e);
+                            }
                         }
                         _ => {
                             eprintln!("[ISI] Notification permission not granted");

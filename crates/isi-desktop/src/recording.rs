@@ -56,6 +56,10 @@ fn notify(app: &AppHandle, title: &str, body: &str) {
         .show();
     if let Err(e) = result {
         eprintln!("[ISI] Failed to show notification: {}", e);
+        // Fallback: update tray tooltip
+        if let Some(tray) = app.tray_by_id("main") {
+            let _ = tray.set_tooltip(Some(&format!("{}: {}", title, body)));
+        }
     }
 }
 
@@ -63,10 +67,17 @@ fn notify(app: &AppHandle, title: &str, body: &str) {
 fn notify_error(app: &AppHandle, title: &str, body: &str) {
     eprintln!("[ISI] Error notification: {} - {}", title, body);
     use tauri_plugin_notification::NotificationExt;
-    let _ = app.notification().builder()
+    let result = app.notification().builder()
         .title(title)
         .body(body)
         .show();
+    if let Err(e) = result {
+        eprintln!("[ISI] Failed to show error notification: {}", e);
+        // Fallback: update tray tooltip so user sees the error
+        if let Some(tray) = app.tray_by_id("main") {
+            let _ = tray.set_tooltip(Some(&format!("{}: {}", title, body)));
+        }
+    }
 }
 
 /// Reset application state to idle after error
