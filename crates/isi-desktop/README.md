@@ -22,12 +22,10 @@ A macOS menu bar application that transforms clipboard images using voice comman
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  Hotkey → whis-core (Record) → Deepgram (Transcription) │
-│    ↓                                  ↓                  │
-│  Clipboard (Image) → Gemini 2.0 Flash → Clipboard (Out) │
-└─────────────────────────────────────────────────────────┘
+Copy Image → Speak → Paste Transformed
 ```
+
+Pipeline: Hotkey → whis-core (Record) → Deepgram (Transcription) → Gemini 3 Pro (Transform) → Clipboard
 
 ## Key Files
 

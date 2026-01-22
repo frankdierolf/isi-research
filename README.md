@@ -48,7 +48,7 @@ Requires: Rust, Node.js, and [just](https://github.com/casey/just) command runne
 | Frontend | Vue.js 3 + TypeScript |
 | Voice Recording | [whis-core](https://crates.io/crates/whis-core) |
 | Transcription | [Deepgram](https://deepgram.com/) Nova-2 |
-| Image Transformation | [Google Gemini](https://ai.google.dev/) 2.0 Flash |
+| Image Transformation | [Google Gemini](https://ai.google.dev/) 3 Pro |
 | Clipboard | [arboard](https://crates.io/crates/arboard) |
 
 ## Project Structure
@@ -63,7 +63,7 @@ isi-research/
 
 ## Media
 
-- **[Demo Video](./demo-video.mov)** — Showcase of the app in action
+- **[Demo Video](./demo-video.mp4)** — Showcase of the app in action
 - **[The Journey](./journey/)** — The 48-hour story behind this project
   - [Podcast](./journey/podcast.m4a) — Audio version via NotebookLM
   - [Infographic](./journey/infographic.png) — Visual overview
