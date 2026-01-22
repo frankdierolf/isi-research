@@ -1,0 +1,55 @@
+[package]
+name = "isi-desktop"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "ISI Research - Voice-controlled image manipulation"
+
+[lib]
+name = "isi_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Tauri core
+tauri = { version = "2", features = ["tray-icon", "image-png", "macos-private-api"] }
+tauri-plugin-global-shortcut = "2.3"
+tauri-plugin-notification = "2"
+tauri-plugin-shell = "2"
+
+# Voice transcription via whis-core (from crates.io)
+# Using default features to include tokio-tungstenite for warmup module
+whis-core = "0.7"
+
+# Clipboard with image support
+arboard = { version = "3.4", features = ["image-data"] }
+
+# Gemini API client
+gemini-rust = "1.7"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "2.0"
+
+# Base64 encoding for images
+base64 = "0.22"
+
+# Image encoding/decoding (PNG)
+image = "0.25"
+
+# Directory paths
+dirs = "5"
+
+# Open files with default application
+open = "5"
