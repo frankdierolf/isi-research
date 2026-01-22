@@ -1,24 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ModeView from '../views/ModeView.vue'
-import SettingsView from '../views/SettingsView.vue'
+import HomeView from '../views/HomeView.vue'
 import AboutView from '../views/AboutView.vue'
 
 const routes = [
   {
     path: '/',
-    redirect: '/mode',
+    redirect: '/home',
   },
   {
-    path: '/mode',
-    name: 'mode',
-    component: ModeView,
-    meta: { title: 'Mode' },
-  },
-  {
-    path: '/settings',
-    name: 'settings',
-    component: SettingsView,
-    meta: { title: 'Settings' },
+    path: '/home',
+    name: 'home',
+    component: HomeView,
+    meta: { title: 'Home' },
   },
   {
     path: '/about',
@@ -34,7 +27,6 @@ export const router = createRouter({
 })
 
 export const navItems = [
-  { path: '/mode', label: 'Mode' },
-  { path: '/settings', label: 'Settings' },
+  { path: '/home', label: 'Home' },
   { path: '/about', label: 'About' },
 ]

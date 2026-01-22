@@ -19,7 +19,7 @@ use tauri::{
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
 use config::Config;
-use recording::{AppState, toggle_recording, process_with_text};
+use recording::{AppState, toggle_recording};
 
 /// DTO for config serialization to frontend
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -36,10 +36,9 @@ fn setup_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     use tauri::image::Image;
 
     let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
-    let settings_item = MenuItem::with_id(app, "settings", "Settings...", true, None::<&str>)?;
-    let test_item = MenuItem::with_id(app, "test", "Test with Text...", true, None::<&str>)?;
+    let settings_item = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
 
-    let menu = Menu::with_items(app, &[&settings_item, &test_item, &quit])?;
+    let menu = Menu::with_items(app, &[&settings_item, &quit])?;
 
     let icon = Image::from_bytes(include_bytes!("../icons/tray-idle.png"))?;
 
@@ -58,19 +57,6 @@ fn setup_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
                     let _ = window.show();
                     let _ = window.set_focus();
                 }
-            }
-            "test" => {
-                // Test mode: process with hardcoded text command (no microphone needed)
-                let app_clone = app.clone();
-                tauri::async_runtime::spawn(async move {
-                    if let Err(e) = process_with_text(app_clone, "make it black and white").await {
-                        eprintln!("[ISI] Test error: {}", e);
-                        // Print full error chain for debugging
-                        for cause in e.chain().skip(1) {
-                            eprintln!("[ISI]   Caused by: {}", cause);
-                        }
-                    }
-                });
             }
             _ => {}
         })
@@ -164,6 +150,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_opener::init())
         .manage(app_state)
         .setup(move |app| {
             // Setup system tray
@@ -174,15 +161,63 @@ pub fn run() {
                 eprintln!("Failed to setup shortcut: {}", e);
             }
 
-            // Show initial notification
+            // Request notification permission and show initial notification
             use tauri_plugin_notification::NotificationExt;
-            let _ = app.notification()
-                .builder()
-                .title("ISI Voice Image")
-                .body(format!("Ready! Press {} to transform images.", shortcut))
-                .show();
+            use tauri_plugin_notification::PermissionState;
+
+            let notification = app.notification();
+
+            // Check permission state and request if needed
+            match notification.permission_state() {
+                Ok(PermissionState::Granted) => {
+                    // Permission already granted, show welcome notification
+                    let _ = notification
+                        .builder()
+                        .title("ISI Voice Image")
+                        .body(format!("Ready! Press {} to transform images.", shortcut))
+                        .show();
+                }
+                Ok(PermissionState::Denied) => {
+                    eprintln!("[ISI] Notification permission denied by user");
+                }
+                Ok(PermissionState::Prompt) | Ok(PermissionState::PromptWithRationale) | Err(_) => {
+                    // Request permission - this will prompt the user on macOS
+                    match notification.request_permission() {
+                        Ok(PermissionState::Granted) => {
+                            let _ = notification
+                                .builder()
+                                .title("ISI Voice Image")
+                                .body(format!("Ready! Press {} to transform images.", shortcut))
+                                .show();
+                        }
+                        _ => {
+                            eprintln!("[ISI] Notification permission not granted");
+                        }
+                    }
+                }
+            }
+
+            // Handle dock icon click on macOS (reopen event)
+            #[cfg(target_os = "macos")]
+            {
+                use tauri::Listener;
+                let handle = app.handle().clone();
+                app.listen("tauri://reopen", move |_| {
+                    if let Some(window) = handle.get_webview_window("settings") {
+                        let _ = window.show();
+                        let _ = window.set_focus();
+                    }
+                });
+            }
 
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                // Hide window instead of closing (minimize to tray)
+                api.prevent_close();
+                let _ = window.hide();
+            }
         })
         .invoke_handler(tauri::generate_handler![get_status, is_configured, get_config, save_config])
         .run(tauri::generate_context!())

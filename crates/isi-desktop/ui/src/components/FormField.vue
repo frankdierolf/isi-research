@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <div class="form-field">
     <label v-if="label" :for="htmlFor">{{ label }}</label>
-    <p v-if="description" class="description">
+    <p v-if="description || $slots.description" class="description">
       <slot name="description">{{ description }}</slot>
     </p>
     <slot />

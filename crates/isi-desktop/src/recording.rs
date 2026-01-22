@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use tauri::{AppHandle, Manager};
 use whis_core::{AudioRecorder, TranscriptionProvider, progressive_transcribe_cloud};
 
@@ -59,6 +59,25 @@ fn notify(app: &AppHandle, title: &str, body: &str) {
     }
 }
 
+/// Send an error notification
+fn notify_error(app: &AppHandle, title: &str, body: &str) {
+    eprintln!("[ISI] Error notification: {} - {}", title, body);
+    use tauri_plugin_notification::NotificationExt;
+    let _ = app.notification().builder()
+        .title(title)
+        .body(body)
+        .show();
+}
+
+/// Reset application state to idle after error
+async fn reset_state(app: &AppHandle) {
+    let state = app.state::<Arc<AppState>>();
+    state.is_recording.store(false, Ordering::SeqCst);
+    *state.recording_state.lock().await = RecordingState::Idle;
+    update_tray_icon(app, RecordingState::Idle);
+    update_tray_status(app, "ISI Voice Image - Ready");
+}
+
 /// Update tray icon tooltip
 fn update_tray_status(app: &AppHandle, status: &str) {
     if let Some(tray) = app.tray_by_id("main") {
@@ -101,23 +120,29 @@ pub fn toggle_recording(app: AppHandle) {
         if is_manual {
             // Manual mode: use stored prompt directly
             println!("[ISI] Manual mode - using prompt: '{}'", manual_prompt);
-            if let Err(e) = process_with_text(app_clone, &manual_prompt).await {
+            if let Err(e) = process_with_text(app_clone.clone(), &manual_prompt).await {
                 eprintln!("[ISI] Error processing: {}", e);
                 for cause in e.chain().skip(1) {
                     eprintln!("[ISI]   Caused by: {}", cause);
                 }
+                notify_error(&app_clone, "Error", &format!("{}", e));
+                reset_state(&app_clone).await;
             }
         } else if state.is_recording() {
             println!("[ISI] Currently recording - stopping...");
             // Stop recording
-            if let Err(e) = stop_recording_and_process(app_clone).await {
+            if let Err(e) = stop_recording_and_process(app_clone.clone()).await {
                 eprintln!("[ISI] Error processing: {}", e);
+                notify_error(&app_clone, "Error", &format!("{}", e));
+                reset_state(&app_clone).await;
             }
         } else {
             println!("[ISI] Not recording - starting...");
             // Start recording
-            if let Err(e) = start_recording(app_clone).await {
+            if let Err(e) = start_recording(app_clone.clone()).await {
                 eprintln!("[ISI] Error starting recording: {}", e);
+                notify_error(&app_clone, "Error", &format!("{}", e));
+                reset_state(&app_clone).await;
             }
         }
     });
@@ -132,7 +157,7 @@ async fn start_recording(app: AppHandle) -> Result<()> {
     println!("[ISI] Checking clipboard for image...");
     if !has_image_in_clipboard() {
         println!("[ISI] No image in clipboard");
-        notify(&app, "No Image", "Copy an image to clipboard first");
+        notify(&app, "No Image", "Copy an image to the clipboard first");
         return Ok(());
     }
     println!("[ISI] Image found in clipboard");
@@ -163,9 +188,11 @@ async fn start_recording(app: AppHandle) -> Result<()> {
 
     // Create and start recorder
     println!("[ISI] Creating AudioRecorder...");
-    let mut recorder = AudioRecorder::new()?;
+    let mut recorder = AudioRecorder::new()
+        .context("Microphone unavailable")?;
     println!("[ISI] Starting recording...");
-    recorder.start_recording()?;
+    recorder.start_recording()
+        .context("Could not start recording")?;
     *state.recorder.lock().await = Some(recorder);
     println!("[ISI] Recording started successfully");
 
@@ -236,7 +263,8 @@ async fn stop_recording_and_process(app: AppHandle) -> Result<()> {
         chunk_rx,
         None, // no progress callback
     )
-    .await?;
+    .await
+    .context("Transcription failed - check your internet connection")?;
     println!("[ISI] Transcription result: '{}'", transcription);
 
     if transcription.trim().is_empty() {
@@ -256,7 +284,8 @@ async fn stop_recording_and_process(app: AppHandle) -> Result<()> {
 
     // Read image from clipboard
     println!("[ISI] Reading image from clipboard...");
-    let original_image = read_image_from_clipboard()?;
+    let original_image = read_image_from_clipboard()
+        .context("Could not read clipboard")?;
     println!("[ISI] Image read: {}x{} ({} bytes)", original_image.width, original_image.height, original_image.rgba_data.len());
 
     // Transform with Gemini
@@ -265,15 +294,16 @@ async fn stop_recording_and_process(app: AppHandle) -> Result<()> {
     println!("[ISI] Calling Gemini to transform image...");
     let transformed_image = gemini
         .transform_image(&original_image, &transcription)
-        .await?;
+        .await
+        .context("Image transformation failed")?;
     println!("[ISI] Transformed image: {}x{} ({} bytes)", transformed_image.width, transformed_image.height, transformed_image.rgba_data.len());
 
     // Write back to clipboard
     println!("[ISI] Writing transformed image to clipboard...");
-    write_image_to_clipboard(&transformed_image)?;
+    write_image_to_clipboard(&transformed_image)
+        .context("Could not save to clipboard")?;
     println!("[ISI] Image written to clipboard");
 
-    // Done!
     *state.recording_state.lock().await = RecordingState::Idle;
     update_tray_icon(&app, RecordingState::Idle);
     update_tray_status(&app, "ISI Voice Image - Ready");
@@ -293,7 +323,7 @@ pub async fn process_with_text(app: AppHandle, command: &str) -> Result<()> {
     println!("[ISI] Checking clipboard for image...");
     if !has_image_in_clipboard() {
         println!("[ISI] No image in clipboard");
-        notify(&app, "No Image", "Copy an image to clipboard first");
+        notify(&app, "No Image", "Copy an image to the clipboard first");
         return Ok(());
     }
     println!("[ISI] Image found in clipboard");
@@ -321,11 +351,12 @@ pub async fn process_with_text(app: AppHandle, command: &str) -> Result<()> {
     *state.recording_state.lock().await = RecordingState::Transforming;
     update_tray_icon(&app, RecordingState::Transforming);
     update_tray_status(&app, "Transforming image...");
-    notify(&app, "Test Mode", &format!("Transforming: \"{}\"", command));
+    notify(&app, "Transforming", &format!("\"{}\"", command));
 
     // Read image from clipboard
     println!("[ISI] Reading image from clipboard...");
-    let original_image = read_image_from_clipboard()?;
+    let original_image = read_image_from_clipboard()
+        .context("Could not read clipboard")?;
     println!("[ISI] Image read: {}x{} ({} bytes)", original_image.width, original_image.height, original_image.rgba_data.len());
 
     // Transform with Gemini
@@ -334,20 +365,21 @@ pub async fn process_with_text(app: AppHandle, command: &str) -> Result<()> {
     println!("[ISI] Calling Gemini to transform image...");
     let transformed_image = gemini
         .transform_image(&original_image, command)
-        .await?;
+        .await
+        .context("Image transformation failed")?;
     println!("[ISI] Transformed image: {}x{} ({} bytes)", transformed_image.width, transformed_image.height, transformed_image.rgba_data.len());
 
     // Write back to clipboard
     println!("[ISI] Writing transformed image to clipboard...");
-    write_image_to_clipboard(&transformed_image)?;
+    write_image_to_clipboard(&transformed_image)
+        .context("Could not save to clipboard")?;
     println!("[ISI] Image written to clipboard");
 
-    // Done!
     *state.recording_state.lock().await = RecordingState::Idle;
     update_tray_icon(&app, RecordingState::Idle);
     update_tray_status(&app, "ISI Voice Image - Ready");
     notify(&app, "Done!", "Transformed image is in your clipboard");
-    println!("[ISI] Test processing complete!");
+    println!("[ISI] Processing complete!");
 
     Ok(())
 }
