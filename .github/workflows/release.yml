@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2"
+
+      - name: Install frontend dependencies
+        working-directory: crates/isi-desktop/ui
+        run: npm ci
+
+      - name: Build Tauri app
+        working-directory: crates/isi-desktop
+        run: cargo tauri build
+
+      - name: Prepare release artifacts
+        run: |
+          cd crates/isi-desktop/target/release/bundle/macos
+          zip -r "ISI-Voice-Image-${{ github.ref_name }}-macos.zip" "ISI Voice Image.app"
+          mv "ISI-Voice-Image-${{ github.ref_name }}-macos.zip" "${{ github.workspace }}/"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ISI-Voice-Image-${{ github.ref_name }}-macos.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: false
