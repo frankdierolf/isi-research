@@ -10,16 +10,17 @@
     "frontendDist": "ui/dist"
   },
   "app": {
-    "macOSPrivateApi": true,
+    "macOSPrivateApi": false,
     "withGlobalTauri": true,
     "windows": [
       {
         "label": "settings",
-        "title": "ISI Settings",
+        "title": "",
+        "titleBarStyle": "Visible",
         "url": "/",
         "width": 560,
         "height": 480,
-        "visible": false,
+        "visible": true,
         "resizable": false,
         "center": true
       }
@@ -36,7 +37,9 @@
       "icons/icon.ico"
     ],
     "macOS": {
-      "minimumSystemVersion": "10.15"
+      "minimumSystemVersion": "10.15",
+      "infoPlist": "Info.plist",
+      "entitlements": "Entitlements.plist"
     }
   },
   "plugins": {}
