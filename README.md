@@ -1,9 +1,22 @@
-# ISI Voice Image
+<div align="center">
+<img src="https://raw.githubusercontent.com/frankdierolf/isi-research/main/crates/isi-desktop/icons/128x128.png" alt="ISI Voice Image" width="80" height="80" />
 
-Voice-controlled clipboard image transformation for macOS.
+<h3>ISI Voice Image</h3>
+<p>
+  Voice-controlled clipboard image transformation for macOS.
+  <br />
+  <a href="https://isi-research.org">Website</a>
+  ·
+  <a href="./crates/isi-desktop">Desktop App</a>
+  ·
+  <a href="https://github.com/frankdierolf/isi-research/releases">Releases</a>
+</p>
+</div>
 
-> A 2-day experiment from the Ulm Institute of Spoken Intelligence (ISI).
-> **[Read the full story →](./JOURNEY.md)**
+---
+
+> A 48-hour experiment from the Ulm Institute of Spoken Intelligence (ISI).
+> **[Read the full story →](./journey/)**
 
 ## What It Does
 
@@ -22,12 +35,10 @@ Copy an image to your clipboard. Press `Cmd+Shift+I`. Speak what you want ("make
 ```bash
 git clone https://github.com/frankdierolf/isi-research
 cd isi-research
-just dev-desktop
+just dev
 ```
 
 Requires: Rust, Node.js, and [just](https://github.com/casey/just) command runner.
-
-See `just --list` for all available commands.
 
 ## Tech Stack
 
@@ -37,26 +48,31 @@ See `just --list` for all available commands.
 | Frontend | Vue.js 3 + TypeScript |
 | Voice Recording | [whis-core](https://crates.io/crates/whis-core) |
 | Transcription | [Deepgram](https://deepgram.com/) Nova-2 |
-| Image Transformation | [Google Gemini](https://ai.google.dev/) 3 Pro Image |
+| Image Transformation | [Google Gemini](https://ai.google.dev/) 2.0 Flash |
 | Clipboard | [arboard](https://crates.io/crates/arboard) |
 
 ## Project Structure
 
 ```
 isi-research/
-├── crates/isi-desktop/     # Tauri desktop app (Rust + Vue)
-│   ├── src/                # Rust backend
-│   └── ui/                 # Vue frontend
-├── website/                # Marketing website
-├── justfile                # Build automation
-└── JOURNEY.md              # The story behind this project
+├── crates/isi-desktop/   # Tauri desktop app (Rust + Vue)
+├── website/              # Marketing site at isi-research.org
+├── journey/              # The story behind this project
+└── justfile              # Build automation
 ```
+
+## Media
+
+- **[Demo Video](./demo-video.mov)** — Showcase of the app in action
+- **[The Journey](./journey/)** — The 48-hour story behind this project
+  - [Podcast](./journey/podcast.m4a) — Audio version via NotebookLM
+  - [Infographic](./journey/infographic.png) — Visual overview
 
 ## Links
 
-- **Website**: The "academic paper" framing of this project
+- **Website**: [isi-research.org](https://isi-research.org)
 - **Competition**: [Kiberatung Developer Contest](https://career.kiberatung.de/developer-contest)
-- **whis**: [whis.ink](https://whis.ink) — the voice app this library comes from
+- **whis**: [whis.ink](https://whis.ink) — the voice library this project uses
 
 ## License
 
