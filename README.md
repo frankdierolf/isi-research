@@ -1,28 +1,63 @@
-# Experiment - Whis Extension - Everlast Competition
+# ISI Voice Image
 
-This repo is my playground to tinker around two problems:
+Voice-controlled clipboard image transformation for macOS.
 
-1. How can I develop an macOS application and test it with only a Linux machine?
-2. How can I build an application that kicks off a chat?
+> A 2-day experiment from the Ulm Institute of Spoken Intelligence (ISI).
+> **[Read the full story →](./JOURNEY.md)**
 
-## Purpose
+## What It Does
 
-It would be great to just kick off a task with a simple voice input. Later it can be refined in the chat — via email, Telegram, WhatsApp, or in applications like Lovable, v0, or NotebookLM.
+Copy an image to your clipboard. Press `Cmd+Shift+I`. Speak what you want ("make it black and white", "remove the background", "turn this into a sketch"). Press the shortcut again. Paste the transformed result.
 
-I would love to have an easy way to kick off a task. The goal is not to create a full chat experience. The goal is to build something that kicks something off. Most prompts I use are one-shots anyway: deep research about a topic, building a podcast, making an image or logo, building a landing page for a new idea, or drafting a piece of content.
+## Quick Start
 
-## Approach
+1. **Download** from [Releases](https://github.com/frankdierolf/isi-research/releases)
+2. **Configure** API keys in Settings (Deepgram + Gemini)
+3. **Copy** any image to your clipboard
+4. **Press** `Cmd+Shift+I`, speak your instruction, press again
+5. **Paste** — the transformed image is ready
 
-I will build an macOS application that records voice, translates it to text, and makes an API call. The API then responds either with a link or with a simple "Cool, it's out" or something like that.
+## Build from Source
 
-I will not focus on inter-application authentication — like logging into Lovable on my behalf to kick off a chat. Nah, that would break my head. More something like sending a picture via email. If I choose email, it won't be a transactional email. Maybe a message to Telegram is easier. Yeah, I will have to tinker around with it.
+```bash
+git clone https://github.com/frankdierolf/isi-research
+cd isi-research
+just dev-desktop
+```
 
-Basically: make an macOS application that can translate voice to text and make one API call. That is in scope. How I will proceed — let's see.
+Requires: Rust, Node.js, and [just](https://github.com/casey/just) command runner.
 
-## Why a Competition?
+See `just --list` for all available commands.
 
-For these kinds of feasibility studies, it's nice to have some judges and get some feedback. That's why I'm using this German competition, which fits quite nicely. If I'm lucky, I can grab some prize money — and even better, make some buzz around Whis in a smaller, tailored community. Based on my experience, that's better than trying to make a grand buzz in a totally noisy world.
+## Tech Stack
 
-**Competition:** https://career.kiberatung.de/developer-contest
+| Component | Technology |
+|-----------|------------|
+| Desktop Framework | [Tauri 2](https://tauri.app/) |
+| Frontend | Vue.js 3 + TypeScript |
+| Voice Recording | [whis-core](https://crates.io/crates/whis-core) |
+| Transcription | [Deepgram](https://deepgram.com/) Nova-2 |
+| Image Transformation | [Google Gemini](https://ai.google.dev/) 3 Pro Image |
+| Clipboard | [arboard](https://crates.io/crates/arboard) |
 
-Die Leitplanken der Challenge sind in [challenge.md](./challenge.md) zu finden.
+## Project Structure
+
+```
+isi-research/
+├── crates/isi-desktop/     # Tauri desktop app (Rust + Vue)
+│   ├── src/                # Rust backend
+│   └── ui/                 # Vue frontend
+├── website/                # Marketing website
+├── justfile                # Build automation
+└── JOURNEY.md              # The story behind this project
+```
+
+## Links
+
+- **Website**: The "academic paper" framing of this project
+- **Competition**: [Kiberatung Developer Contest](https://career.kiberatung.de/developer-contest)
+- **whis**: [whis.ink](https://whis.ink) — the voice app this library comes from
+
+## License
+
+MIT
