@@ -36,7 +36,7 @@ jobs:
 
       - name: Prepare release artifacts
         run: |
-          cd crates/isi-desktop/target/release/bundle/macos
+          cd target/release/bundle/macos
           zip -r "ISI-Voice-Image-${{ github.ref_name }}-macos.zip" "ISI Voice Image.app"
           mv "ISI-Voice-Image-${{ github.ref_name }}-macos.zip" "${{ github.workspace }}/"
 
