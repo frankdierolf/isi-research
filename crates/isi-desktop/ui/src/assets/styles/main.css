@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;500&display=swap');
+
+:root {
+  --color-ink: #1a1a1a;
+  --color-paper: #ffffff;
+  --color-muted: #666666;
+  --color-border: #e0e0e0;
+  --sidebar-width: 140px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-ink);
+  background: var(--color-paper);
+}
+
+#app {
+  min-height: 100vh;
+}

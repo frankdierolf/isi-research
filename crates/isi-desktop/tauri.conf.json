@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ISI Voice Image",
+  "version": "0.1.0",
+  "identifier": "org.isi-research.desktop",
+  "build": {
+    "beforeDevCommand": { "cwd": "ui", "script": "npm run dev" },
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": { "cwd": "ui", "script": "npm run build" },
+    "frontendDist": "ui/dist"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "settings",
+        "title": "ISI Settings",
+        "url": "/",
+        "width": 560,
+        "height": 480,
+        "visible": false,
+        "resizable": false,
+        "center": true
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    }
+  },
+  "plugins": {}
+}
