@@ -34,7 +34,8 @@ onMounted(() => {
 <style>
 .app-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .main-content {
@@ -45,7 +46,11 @@ onMounted(() => {
 }
 
 .content-header {
-  padding: 20px 24px 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-paper);
+  padding: 20px 24px 16px;
 }
 
 .content-header h2 {
