@@ -6,17 +6,16 @@
   How we built a voice-controlled image transformer in 48 hours.
   <br />
   <a href="../">← Back to Project</a>
-  ·
-  <a href="./podcast.m4a">Podcast</a>
-  ·
-  <a href="./infographic.png">Infographic</a>
 </p>
 </div>
 
 ---
 
-> **Prefer listening?** Check out the [podcast version](./podcast.m4a) of this story.
-> **Visual overview?** See the [infographic](./infographic.png).
+
+# Podcast 
+[podcast.webm](https://github.com/user-attachments/assets/a81f7086-6563-4720-9b4c-536a8a272d03)
+
+# The story
 
 ## The Premise
 
@@ -74,20 +73,20 @@ By the end of the day, it worked. Copy an image to clipboard. Press `Cmd+Shift+I
 ┌─────────────────────────────────────────────────────────┐
 │                    ISI Voice Image                      │
 ├─────────────────────────────────────────────────────────┤
-│  ┌─────────┐   ┌───────────┐   ┌────────────────────┐  │
-│  │ Hotkey  │ → │ whis-core │ → │     Deepgram       │  │
-│  │ Trigger │   │ (Record)  │   │  (Transcription)   │  │
-│  └─────────┘   └───────────┘   └────────────────────┘  │
+│  ┌─────────┐   ┌───────────┐   ┌────────────────────┐   │
+│  │ Hotkey  │ → │ whis-core │ → │     Deepgram       │   │
+│  │ Trigger │   │ (Record)  │   │  (Transcription)   │   │
+│  └─────────┘   └───────────┘   └────────────────────┘   │
 │       ↓                               ↓                 │
-│  ┌─────────┐                  ┌───────────────────┐    │
-│  │Clipboard│ ───────────────→ │ Gemini 3 Pro      │    │
-│  │ (Image) │                  │ (Transform Image) │    │
-│  └─────────┘                  └───────────────────┘    │
+│  ┌─────────┐                  ┌───────────────────┐     │
+│  │Clipboard│ ───────────────→ │ Gemini 3 Pro      │     │
+│  │ (Image) │                  │ (Transform Image) │     │
+│  └─────────┘                  └───────────────────┘     │
 │                                       ↓                 │
-│                              ┌───────────────┐         │
-│                              │   Clipboard   │         │
-│                              │   (Result)    │         │
-│                              └───────────────┘         │
+│                              ┌───────────────┐          │
+│                              │   Clipboard   │          │
+│                              │   (Result)    │          │
+│                              └───────────────┘          │
 └─────────────────────────────────────────────────────────┘
 ```
 
