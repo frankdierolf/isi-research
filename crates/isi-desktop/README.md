@@ -34,6 +34,7 @@ Pipeline: Hotkey → whis-core (Record) → Deepgram (Transcription) → Gemini 
 | `src/recording.rs` | State machine for voice-to-image pipeline |
 | `src/gemini.rs` | Gemini API integration |
 | `src/clipboard.rs` | Clipboard image read/write |
+| `src/config.rs` | Configuration management (API keys, shortcuts) |
 | `src/lib.rs` | Tauri setup, commands, system tray |
 
 ## Development

@@ -74,7 +74,6 @@ isi-research/
 - **[Demo Video](./demo-video.mp4)** — Showcase of the app in action
 - **[The Journey](./journey/)** — The 48-hour story behind this project
   - [Podcast](./journey/podcast.m4a) — Audio version via NotebookLM
-  - [Infographic](./journey/infographic.png) — Visual overview
 
 ## Links
 
