@@ -22,6 +22,14 @@
 
 Copy an image to your clipboard. Press `Cmd+Shift+I`. Speak what you want ("make it black and white", "remove the background", "turn this into a sketch"). Press the shortcut again. Paste the transformed result.
 
+## Demo
+
+
+
+https://github.com/user-attachments/assets/78dfc39e-9e1c-4950-8954-e43778db6365
+
+
+
 ## Quick Start
 
 1. **Download** from [Releases](https://github.com/frankdierolf/isi-research/releases)
