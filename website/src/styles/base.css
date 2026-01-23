@@ -1,0 +1,171 @@
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-height);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   APP CONTAINER
+   ============================================ */
+.app {
+  position: relative;
+  min-height: 100vh;
+}
+
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+  background-size: 100px 100px;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+/* ============================================
+   SECTION SHARED STYLES
+   ============================================ */
+section {
+  position: relative;
+  padding: var(--space-4xl) var(--space-lg);
+  z-index: 1;
+}
+
+.section__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.section__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-ink-lighter);
+  margin-bottom: var(--space-2xl);
+}
+
+.section__number {
+  font-weight: 500;
+}
+
+.section__divider {
+  width: 40px;
+  height: 1px;
+  background: var(--color-border-dark);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: var(--space-md) var(--space-lg);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+  text-decoration: none;
+}
+
+.btn__icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s var(--ease-out);
+}
+
+.btn--primary {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.btn--primary:hover {
+  background: var(--color-ink-light);
+}
+
+.btn--primary:hover .btn__icon {
+  transform: translate(2px, -2px);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-border-dark);
+}
+
+.btn--secondary:hover {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+}
+
+.btn--download {
+  background: var(--color-accent);
+  color: white;
+  padding: var(--space-md) var(--space-xl);
+}
+
+.btn--download:hover {
+  background: var(--color-accent-light);
+}
+
+.btn--paper {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.btn--paper:hover {
+  background: var(--color-ink-light);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  :root {
+    --space-4xl: 4rem;
+  }
+}
